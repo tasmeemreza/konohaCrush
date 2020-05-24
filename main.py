@@ -9,7 +9,7 @@ from pygame.sprite import Group
 from pygame.sprite import Sprite
 from random import randint
 from button import Button
-sexyHarem = False
+isGirl = False
 
 def onKeyDown(screen, player, key, running):
 	if running == False and key == pygame.K_TAB:
@@ -24,11 +24,11 @@ def onKeyDown(screen, player, key, running):
 		if len(player.weapons) < 3:
 			player.attack()
 	elif key == pygame.K_h:
-		global sexyHarem 
-		if sexyHarem:
-			sexyHarem = False
+		global isGirl 
+		if isGirl:
+			isGirl = False
 		else:
-			sexyHarem = True
+			isGirl = True
 
 def onKeyUp(player, running):
 	if running:
@@ -80,7 +80,7 @@ while True:
 			hero = Player(screen, 'images/naruto.png', 'images/rasengan.png', True, 'images/girl.png', 'images/love.png')
 			villain = Player(screen, 'images/snake.png', 'images/sword.png', False)
 			reqInit = False
-		if sexyHarem:
+		if isGirl:
 			hero.changeGirl()
 		else:
 			hero.changeBoy()
@@ -93,7 +93,7 @@ while True:
 		if hero.get_points() <= 0 or villain.get_points() <= 0: 
 			running = False
 			reqInit = True
-			sexyHarem = False
+			isGirl = False
 			if hero.get_points() > 0:
 				status = 'won'
 			else:
