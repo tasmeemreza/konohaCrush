@@ -6,8 +6,7 @@ class Score:
 		self.screen = screen
 		self.x, self.y = x, y
 		self.color = color
-		# print(self.x, self.x + self.profile.score_width)
 	def show(self, val):
-		offsetX = val * self.profile.score_width
-		pygame.draw.rect(self.screen, self.color, pygame.Rect(self.x, self.y, offsetX, self.profile.score_height))
-		pygame.draw.rect(self.screen, (0, 0, 0), pygame.Rect(self.x, self.y, self.profile.score_width, self.profile.score_height), 5)
+		offsetX = val * self.profile.scoreWidth
+		pygame.draw.rect(self.screen, self.color, pygame.Rect(self.x, self.y, offsetX, self.profile.scoreHeight))
+		pygame.draw.rect(self.screen, (0, 0, 0), pygame.Rect(self.x, self.y, self.profile.scoreWidth, self.profile.scoreHeight), 5)

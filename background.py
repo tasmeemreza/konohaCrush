@@ -1,8 +1,8 @@
 import pygame
 class Background:
-	def __init__(self, screen):
+	def __init__(self, screen, path):
 		self.screen = screen
-		self.image = pygame.image.load('images/background.jpg').convert()
+		self.image = pygame.image.load(path).convert()
 		self.rect = self.image.get_rect()
 		self.rect.x = 0
 		self.rect.y = 0

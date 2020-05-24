@@ -19,21 +19,22 @@ class Weapon(Sprite):
 		self.rect.centerx, self.rect.centery = self.x, self.y
 		self.active = True
 		self.path = path
+		self.xDir = randint(-1, 1)
+		self.isLeft = player.isLeft
 
-	def intersect(self, p, x, y):
-		if p.left <= x and x <= p.right and p.top <= y and y <= p.bottom:
-			return True
-		else:
-			return False
 	def update(self, opponent, opponentWeapons):
 		for i in opponentWeapons.sprites():
-			if self.intersect(self.rect, i.rect.centerx, i.rect.centery) or self.intersect(i.rect, self.x, self.y):
+			if self.rect.collidepoint((i.rect.centerx, i.rect.centery)) or i.rect.collidepoint((self.x, self.y)):
 				self.active = False
 				i.active = False
-		if self.intersect(opponent.rect, self.rect.centerx, self.rect.centery):
+		if opponent.rect.collidepoint((self.rect.centerx, self.rect.centery)):
 			self.active = False
 			opponent.attacked()
-		self.x += self.profile.weaponSpeed
+		if self.isLeft:
+			self.x += self.profile.weaponSpeed
+		else:
+			self.x -= self.profile.weaponSpeed
+			self.y += self.xDir
 		self.rect.centerx, self.rect.centery = self.x, self.y
 	def show(self):
 		self.screen.blit(self.image, self.rect)

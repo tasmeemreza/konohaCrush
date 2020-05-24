@@ -8,7 +8,8 @@ from pygame.sprite import Group
 from pygame.sprite import Sprite
 from random import randint
 class Player:
-	def __init__(self, screen, playerPath, weapons, weaponPath, isLeft):
+	def __init__(self, screen, playerPath, weaponPath, isLeft, alternate=None, alternateWeapon=None):
+		# print('init', playerPath)
 		self.profile = Settings()
 		self.screen = screen
 		self.image = pygame.image.load(playerPath).convert_alpha()
@@ -19,15 +20,24 @@ class Player:
 			self.x = self.screen.get_width() - self.image.get_width()
 		self.y = self.screen.get_height() - self.image.get_height()
 		self.rect.x, self.rect.y = self.x, self.y
-		self.points = self.profile.total_points
+		self.points = self.profile.totalPoints
 		self.isLeft = isLeft
 		self.direction = 0
-		self.weapons = weapons
+		self.weapons = Group()
 		self.weaponPath = weaponPath
 		self.cnt = 0
-		if not isLeft:
-			self.profile.weaponSpeed *= -1
-	
+		if isLeft:
+			xCoord = 10
+			bgColor = (0, 138, 46)
+		else:
+			xCoord = self.screen.get_width() - 10 - self.profile.scoreWidth
+			bgColor = (204, 6, 13)
+		self.chakra = Score(screen, bgColor, xCoord, 10)
+		self.alternate = alternate
+		self.alternateWeapon = alternateWeapon
+		self.playerPath = playerPath
+		self.isMale = True
+
 	def offset(self, direction):
 		self.direction = direction		
 	
@@ -42,11 +52,29 @@ class Player:
 
 	def attacked(self):
 		self.points -= 10
-		if self.points < 0:
-			pygame.quit()
-			sys.exit()
 
-	def randomMovement(self):
+	def changeBoy(self):
+		if self.isMale:
+			return 
+		self.weaponPath, self.alternateWeapon = self.alternateWeapon, self.weaponPath
+		self.image = pygame.image.load(self.playerPath)
+		self.rect = self.image.get_rect()
+		self.rect.x, self.rect.y = self.x, self.y
+		self.isMale = True
+
+	def changeGirl(self):
+		if not self.isMale:
+			return 
+		self.weaponPath, self.alternateWeapon = self.alternateWeapon, self.weaponPath
+		self.image = pygame.image.load(self.alternate)
+		self.rect = self.image.get_rect()
+		self.rect.x, self.rect.y = self.x, self.y
+		self.isMale = False
+
+	def get_points(self):
+		return self.points
+
+	def randomMovement(self, opponent):
 		self.cnt = (self.cnt + 1) % self.profile.maxMove 
 		if self.cnt == 0:
 			self.direction = randint(0, 1)
@@ -56,10 +84,14 @@ class Player:
 			self.rect.bottom += self.direction
 		else: 
 			self.cnt = self.profile.maxMove - 1
-		if randint(0, self.profile.attackMode - 1) % self.profile.attackMode == 0:
+		mult = 1
+		if not opponent.isMale:
+			mult *= 2
+		if randint(0, self.profile.attackMode * mult - 1) % (mult * self.profile.attackMode) == 0:
 			self.attack()
 
-	def update(self, opponent, opponentWeapons):
+	def update(self, opponent):
+		opponentWeapons = opponent.weapons
 		self.weapons.update(opponent, opponentWeapons)
 		for j in self.weapons.sprites():
 			if j.rect.right < 0 or j.rect.left > self.screen.get_width():
@@ -72,8 +104,10 @@ class Player:
 				self.y += self.direction
 				self.rect.x, self.rect.y = self.x, self.y
 		else:
-			self.randomMovement()
+			self.randomMovement(opponent)
+	
 	def show(self):
+		self.chakra.show(self.points / self.profile.totalPoints)
 		self.screen.blit(self.image, self.rect)
 		for j in self.weapons.sprites():
 			j.show()
