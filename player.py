@@ -107,7 +107,7 @@ class Player:
 			self.randomMovement(opponent)
 	
 	def show(self):
-		self.chakra.show(self.points / self.profile.totalPoints)
 		self.screen.blit(self.image, self.rect)
 		for j in self.weapons.sprites():
 			j.show()
+		self.chakra.show(self.points / self.profile.totalPoints)
